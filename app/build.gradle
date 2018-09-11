@@ -1,0 +1,100 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion versions.compileSdk
+
+    defaultConfig {
+        minSdkVersion versions.minSdk
+        targetSdkVersion versions.targetSdk
+        versionCode buildVersionCode()
+        versionName version + "-" + rootProject.gitSha
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "GIT_SHA", "\"${gitSha}\""
+        //multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    flavorDimensions "environment"
+    productFlavors {
+        appProd {
+            dimension "environment"
+            versionNameSuffix ""
+            buildConfigField 'String', 'REST_URL', '"todo"'
+        }
+        appTest {
+            dimension "environment"
+            versionNameSuffix "-TEST"
+            buildConfigField 'String', 'REST_URL', '"http://localhost:8080/"'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    applicationVariants.all { variant ->
+        variant.outputs.all { output ->
+            def fileName = "RX-REST"
+            if (variant.buildType.name == "release") {
+                fileName += "-${variant.versionName}.apk"
+            } else {
+                fileName += "-${variant.versionName}-${variant.buildType.name}.apk"
+            }
+            output.outputFileName = fileName
+        }
+    }
+}
+
+dependencies {
+
+    implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
+
+    // ui
+    implementation "com.android.support:appcompat-v7:${versions.supportLibrary}"
+    implementation "com.android.support:design:${versions.supportLibrary}"
+    implementation "com.android.support.constraint:constraint-layout:${versions.constraintLayout}"
+
+    // kotlin
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${versions.kotlinVersion}"
+
+    //Rx
+    implementation "io.reactivex.rxjava2:rxkotlin:${versions.rxKotlin}"
+    implementation "io.reactivex.rxjava2:rxandroid:${versions.rxAndroid}"
+    // Because RxAndroid releases are few and far between, it is recommended you also
+    // explicitly depend on RxJava's latest version for bug fixes and new features.
+    // (see https://github.com/ReactiveX/RxJava/releases for latest 2.x.x version)
+    implementation "io.reactivex.rxjava2:rxjava:${versions.rxJava}"
+
+    //dagger
+    kapt "com.google.dagger:dagger-compiler:${versions.dagger}"
+    kapt "com.google.dagger:dagger-android-processor:${versions.dagger}"
+    implementation "com.google.dagger:dagger:${versions.dagger}"
+    implementation "com.google.dagger:dagger-android-support:${versions.dagger}"
+
+    // net
+    implementation "com.squareup.okhttp3:okhttp:${versions.okhttp}"
+    implementation "com.squareup.okhttp3:logging-interceptor:${versions.okhttp}"
+    implementation "com.squareup.retrofit2:retrofit:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:converter-gson:${versions.retrofit}"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:${versions.retrofit}"
+
+    //test
+    testImplementation "junit:junit:${versions.junit}"
+    androidTestImplementation "com.android.support.test:runner:${versions.test_runner}"
+    androidTestImplementation "com.android.support.test.espresso:espresso-core:${versions.espresso}"
+}
