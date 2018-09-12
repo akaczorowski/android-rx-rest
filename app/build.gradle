@@ -38,7 +38,9 @@ android {
         appTest {
             dimension "environment"
             versionNameSuffix "-TEST"
-            buildConfigField 'String', 'REST_URL', '"http://localhost:8080/"'
+            // 10.0.2.2 is alias to your host loopback
+            // https://developer.android.com/studio/run/emulator-networking
+            buildConfigField 'String', 'REST_URL', '"http://10.0.2.2:8080/"'
         }
     }
 
