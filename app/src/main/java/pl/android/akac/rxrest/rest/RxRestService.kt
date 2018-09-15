@@ -1,6 +1,8 @@
 package pl.android.akac.rxrest.rest
 
 import io.reactivex.Completable
+import io.reactivex.Single
+import pl.android.akac.rxrest.rest.model.HelloResponse
 import retrofit2.http.GET
 
 /**
@@ -11,4 +13,7 @@ interface RxRestService{
 
     @GET("greeting/hello")
     fun getHello(): Completable
+
+    @GET("greeting/hello")
+    fun getHello2(): Single<HelloResponse>
 }
